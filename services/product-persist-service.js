@@ -4,19 +4,19 @@ const neo4j = require('neo4j-driver').v1
 const driver = neo4j.driver("bolt://localhost:7687", neo4j.auth.basic("neo4j", "test"));
 const session = driver.session()
 
-
-
 const ProductPersistService = {
+
+	session, 
 	
-  viewProduct(userId, productData) {
+  addViewProduct(userId, productData) {
   	return this.buildNode(userId, productData, "view")
   },
 
-  buyProduct(userId, productData) {
+  addBuyProduct(userId, productData) {
   	return this.buildNode(userId, productData, "buy")
   },
 
-  clickProduct(userId, productData) {
+  addClickProduct(userId, productData) {
   	return this.buildNode(userId, productData, "click")
   },
 
