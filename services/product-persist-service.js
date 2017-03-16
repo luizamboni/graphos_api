@@ -11,15 +11,12 @@ const ProductPersistService = {
    	return session.run(`MATCH (u:User { uuid: {userId} }) return u`, { userId })
   },
 
-  viewViewToo(productId){
-    let pattern = `MATCH ()-[:click]->(p:Product {id: { productId }})<-[:click]-(users) 
-                    MATCH (users)-[:click]->(products) 
-                    WHERE NOT products.id = {productId}
-                    RETURN products`
-    return session.run(pattern, { productId })
-    .then( resp => 
-      resp.records.map(r => r.get("products").properties  )
-    )   
+  clickClickToo(productId){
+    return this.getRelation(productId, "click")
+  },
+
+  whoClickInBuy(productId){
+    return this.getRelation(productId, "click", "buy")
   },
 
   addViewProduct(userId, productData) {
@@ -32,6 +29,19 @@ const ProductPersistService = {
 
   addClickProduct(userId, productData) {
   	return this.buildUserNode(userId, productData, "click")
+  },
+
+  getRelation(productId, relType, relType2){
+    relType2 = (relType2) ? relType2 : relType
+
+    let pattern = `MATCH ()-[:${relType}]->(p:Product {id: { productId }})<-[:${relType}]-(users) 
+                    MATCH (users)-[:${relType2}]->(products) 
+                    WHERE NOT products.id = {productId}
+                    RETURN products`
+    return session.run(pattern, { productId })
+    .then( resp => 
+      resp.records.map(r => r.get("products").properties  )
+    )   
   },
 
   buildUserNode(userId, productData, nodeType) {
