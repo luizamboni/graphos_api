@@ -2,20 +2,55 @@
 
 const ProductPersistService = require("../../services/product-persist-service")
 
+const cleanDB = () => ProductPersistService.session
+                      .run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
+
 describe("ProductPersistService", () => {
 	
-	before(function*(){
-		ProductPersistService
-		.session
-		.run(`MATCH (n)
-					OPTIONAL MATCH (n)-[r]-()
-					DELETE n,r`)
-	})
-
 	describe(".addclickProduct", () => {
 
-	  it(".addclickProduct", function*() {
-	  	 let resp = yield ProductPersistService.addclickProduct("userId1", { price: 10.0, id: 123456 })
+	  it("add 3 nodes", function*() {
+	    	yield cleanDB()
+
+	  	 yield [
+          ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 10 }),
+	  	    ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 20 }),
+	  	    ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 30 }),
+
+          ProductPersistService.addClickProduct("userId1", { price: 10.0, id: 1 }),
+	  	    ProductPersistService.addClickProduct("userId1", { price: 10.0, id: 2 }),
+	  	    ProductPersistService.addClickProduct("userId1", { price: 10.0, id: 3 })
+       ]
 	  })
+
+    it("2 user nodes", function*() {
+      let resp = yield ProductPersistService.session.run(`
+        MATCH (u:User)
+        return u`
+      )
+      expect(resp.records).to.have.lengthOf(2)
+    })
 	})
+
+  describe(".viewViewToo", () => {
+
+    let products
+
+    before(function*(){
+	    yield cleanDB()
+
+       yield [
+         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
+         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
+         ProductPersistService.addClickProduct("userId3", { price: 10.0, id: 1 })
+       ]
+
+       products  = yield ProductPersistService.viewViewToo(1)
+    })
+
+    it("who view product 1 view too product 3", () => {
+      expect(products).to.have.lengthOf(1)
+      expect(products[0].id).to.be.equal(3)
+    })
+  })
 })

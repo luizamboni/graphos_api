@@ -7,23 +7,39 @@ const session = driver.session()
 const ProductPersistService = {
 
 	session, 
-	
+	getUser(user){
+   	return session.run(`MATCH (u:User { uuid: {userId} }) return u`, { userId })
+  },
+
+  viewViewToo(productId){
+    let pattern = `MATCH ()-[:click]->(p:Product {id: { productId }})<-[:click]-(users) 
+                    MATCH (users)-[:click]->(products) 
+                    WHERE NOT products.id = {productId}
+                    RETURN products`
+    return session.run(pattern, { productId })
+    .then( resp => 
+      resp.records.map(r => r.get("products").properties  )
+    )   
+  },
+
   addViewProduct(userId, productData) {
-  	return this.buildNode(userId, productData, "view")
+  	return this.buildUserNode(userId, productData, "view")
   },
 
   addBuyProduct(userId, productData) {
-  	return this.buildNode(userId, productData, "buy")
+  	return this.buildUserNode(userId, productData, "buy")
   },
 
   addClickProduct(userId, productData) {
-  	return this.buildNode(userId, productData, "click")
+  	return this.buildUserNode(userId, productData, "click")
   },
 
-  buildNode(userId, productData, nodeType) {
+  buildUserNode(userId, productData, nodeType) {
   	let { price , id } = productData
-  	let r = `CREATE r = (u:User {uuid: {userId} } )-[c:${nodeType}]->(p:Product { price: {price} , id: {id} })`
-   	return session.run(r, { userId , price, id })
+  	let pattern = `MERGE (u:User {uuid: {userId} }) 
+             MERGE (p:Product { price: {price} , id: {id} }) 
+             MERGE (u)-[c:${nodeType}]->(p)`
+   	return session.run(pattern, { userId , price, id })
   }
 }
 
