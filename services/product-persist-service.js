@@ -2,10 +2,13 @@
 
 const neo4j = require('neo4j-driver').v1
 
-const { url, user, pass } = require("../config/persistense")[ENV]
+const { url, user, pass , logger } = require("../config/persistense")[ENV]
 
 const driver = neo4j.driver(url, neo4j.auth.basic(user, pass ))
+
 const session = driver.session()
+
+const log = (params) => logger ? logger(params) : null
 
 const ProductPersistService = {
 
@@ -41,7 +44,9 @@ const ProductPersistService = {
                     MATCH (users)-[:${relType2}]->(products) 
                     WHERE NOT products.id = {productId}
                     RETURN products`
-    return session.run(pattern, { productId })
+    let params = { productId } 
+    log(pattern, params )
+    return session.run(pattern, params)
     .then( resp => 
       resp.records.map(r => r.get("products").properties  )
     )   
@@ -52,7 +57,10 @@ const ProductPersistService = {
   	let pattern = `MERGE (u:User {uuid: {userId} }) 
              MERGE (p:Product { price: {price} , id: {id} }) 
              MERGE (u)-[c:${nodeType}]->(p)`
-   	return session.run(pattern, { userId , price, id })
+    let params =  { userId , price, id }
+    log(pattern, params )
+
+   	return session.run(pattern, params)
   }
 }
 

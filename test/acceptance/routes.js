@@ -94,16 +94,16 @@ describe("ROUTES", () => {
          ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
          ProductPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
        ]   
-      res = yield supertest(app).get("/recommend/who-view-buy?id=3")
+      res = yield supertest(app).get("/recommend/who-view-buy?id=1")
 
     })
     it("responds 200 status", () =>
       expect(res.status).to.be.equal(200)
     )
 
-    it("respond product with id [2]", () =>
-      expect(_(res.body).pluck("id")).to.be.eqls([3,2])
-    )
+    it("respond product with id [3,2]", () =>{
+      expect(_(res.body).pluck("id").sort()).to.be.eqls([2,3])
+    })
 
   })
 })

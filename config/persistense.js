@@ -8,6 +8,7 @@ module.exports = {
   }, 
   test: {
     url: "bolt://localhost:7687", 
+    // logger: console.log, 
     user: "neo4j",
     pass:  "test"
   },
