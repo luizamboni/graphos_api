@@ -13,7 +13,7 @@ const log = (params) => logger ? logger(params) : null
 const ProductPersistService = {
 
 	session, 
-	getUser(user){
+	getUser(userId){
    	return session.run(`MATCH (u:User { uuid: {userId} }) return u`, { userId })
   },
 

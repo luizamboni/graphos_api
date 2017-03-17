@@ -12,7 +12,7 @@ describe("ProductPersistService", () => {
 	describe(".addclickProduct", () => {
 
 	  it("add 3 nodes", function*() {
-	    	yield cleanDB()
+	    yield cleanDB()
 
 	  	 yield [
           ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 10 }),

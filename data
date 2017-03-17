@@ -1,5 +1,0 @@
-
-
-# users that click in procuts id 2
-MATCH ()-[click]->(p:Product {id:3})<-[:click]-(users) 
-RETURN users
