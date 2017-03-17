@@ -1,4 +1,6 @@
-"use strict"
+"use strong"
+
+const request = require("../setup")
 
 const ProductPersistService = require("../../services/product-persist-service")
 
@@ -72,9 +74,9 @@ describe("ProductPersistService", () => {
 
        products  = yield ProductPersistService.whoClickInBuy(1)
     })
+
     it("who click product 1 buy [3,2]", () => {
-      expect(products).to.have.lengthOf(2)
-      expect(products[0].id).to.be.equal(3)
+      expect(_(products).pluck("id").sort() ).to.be.eqls([2,3])
     })
 
   })

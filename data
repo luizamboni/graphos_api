@@ -1,1 +1,5 @@
-CREATE r = (u:User {uuid: "bcb74f89-a75a-40e9-9896-f11a0c93b713"} )-[c:click]->(p:Product { price: 105.1 , id: 15165165 })
+
+
+# users that click in procuts id 2
+MATCH ()-[click]->(p:Product {id:3})<-[:click]-(users) 
+RETURN users

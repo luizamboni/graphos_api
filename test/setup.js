@@ -1,7 +1,5 @@
+"use strong"
 
-
-global.rmAllNodes = () => `MATCH (n)
-OPTIONAL MATCH (n)-[r]-()
-DELETE n,r`
-
+global.ENV = "test"
+global._ = require("underscore")
 global.expect = require("chai").expect

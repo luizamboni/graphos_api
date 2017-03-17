@@ -1,7 +1,10 @@
-"use strict"
+"use strong"
 
 const neo4j = require('neo4j-driver').v1
-const driver = neo4j.driver("bolt://localhost:7687", neo4j.auth.basic("neo4j", "test"));
+
+const { url, user, pass } = require("../config/persistense")[ENV]
+
+const driver = neo4j.driver(url, neo4j.auth.basic(user, pass ))
 const session = driver.session()
 
 const ProductPersistService = {
