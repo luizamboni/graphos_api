@@ -1,0 +1,2 @@
+MATCH r= ()-[v:view]->(p)<-[c:click]-(u) return r
+LIMIT 10
