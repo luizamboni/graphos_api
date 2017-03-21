@@ -2,7 +2,7 @@
 
 const neo4j = require('neo4j-driver').v1
 
-const { url, user, pass , logger } = require("../../config/persistense")[ENV]
+const { url, user, pass , logger } = require("../../config/persistense")[ENV].neo4j
 
 const driver = neo4j.driver(url, neo4j.auth.basic(user, pass ))
 
