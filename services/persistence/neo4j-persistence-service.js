@@ -34,11 +34,11 @@ const Neo4jPersistenceService = {
     )   
   },
 
-  buildUserNode(userId, productData, nodeType) {
+  buildUserNode(userId, productData, relType) {
   	let { price , id } = productData
   	let pattern = `MERGE (u:User {uuid: {userId} }) 
              MERGE (p:Product { price: {price} , id: {id} }) 
-             MERGE (u)-[c:${nodeType}]->(p)`
+             MERGE (u)-[c:${relType}]->(p)`
     let params =  { userId , price, id }
     log(pattern, params )
 
