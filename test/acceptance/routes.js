@@ -7,12 +7,17 @@ const supertest = require("supertest")
 const qs = require("qs")
 
 const ProductPersistService = require("../../services/product-persist-service")
+const Neo4jStrategy = require("../../services/persistence/neo4j-persistence-service")
 
-const cleanDB = () => ProductPersistService.session
-                      .run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
+
 const app = require("../../app")
 
+
 describe("ROUTES", () => {
+  
+  let productPersistService = new ProductPersistService(Neo4jStrategy)
+  const cleanDB = () => productPersistService.run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
+
 	beforeEach(function*(){
     yield cleanDB()
   })
@@ -57,13 +62,13 @@ describe("ROUTES", () => {
       yield cleanDB()
 
       yield [
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addClickProduct("userId3", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addClickProduct("userId3", { price: 10.0, id: 1 }),
 
-         ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
-         ProductPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
+         productPersistService.addBuyProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
+         productPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
       ]
 
       res = yield supertest(app).get("/recommend/who-view-view-too?id=1")
@@ -86,13 +91,13 @@ describe("ROUTES", () => {
       yield cleanDB()
 
       yield [
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addClickProduct("userId3", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addClickProduct("userId3", { price: 10.0, id: 1 }),
 
-         ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
-         ProductPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
+         productPersistService.addBuyProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
+         productPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
        ]   
       res = yield supertest(app).get("/recommend/who-view-buy?id=1")
 

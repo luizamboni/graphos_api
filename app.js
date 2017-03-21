@@ -9,6 +9,8 @@ let parseQs = require("./helpers/parse-qs")
 
 /* services */
 let ProductPersistence = require("./services/product-persist-service")
+const Neo4jStrategy = require("./services/persistence/neo4j-persistence-service")
+let productPersistence = new ProductPersistence(Neo4jStrategy)
 
 /* midleware*/
 let cors = require("cors")
@@ -18,21 +20,21 @@ app.use(cors())
 app.get("/action/view.png", (req, res) => {
   let { user_id, id, price } = parseQs(req.query)
 
-  ProductPersistence.addClickProduct(user_id, { id, price} )
+  productPersistence.addClickProduct(user_id, { id, price} )
   res.send(202)
 })
 
 app.get("/action/buy.png", (req, res) => {
   let { user_id, id, price } = parseQs(req.query)
 
-  ProductPersistence.addBuyProduct(user_id, { id, price} )
+  productPersistence.addBuyProduct(user_id, { id, price} )
   res.send(202)
 })
 
 app.get("/recommend/who-view-view-too", (req, res) => {
   let { id } = parseQs(req.query)
 
-  ProductPersistence
+  productPersistence
   .clickClickToo(id)
   .then( products => res.json(products) )
 
@@ -41,7 +43,7 @@ app.get("/recommend/who-view-view-too", (req, res) => {
 app.get("/recommend/who-view-buy", (req, res) => {
   let { id } = parseQs(req.query)
 
-  ProductPersistence
+  productPersistence
   .whoClickInBuy(id)
   .then( products => res.json(products) )
 })

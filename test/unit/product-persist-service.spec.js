@@ -3,30 +3,33 @@
 const request = require("../setup")
 
 const ProductPersistService = require("../../services/product-persist-service")
+const Neo4jStrategy = require("../../services/persistence/neo4j-persistence-service")
 
-const cleanDB = () => ProductPersistService.session
-                      .run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
 
 describe("ProductPersistService", () => {
-	
+
+	let productPersistService = new ProductPersistService(Neo4jStrategy)
+  
+  const cleanDB = () => productPersistService.run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
+
 	describe(".addclickProduct", () => {
 
 	  it("add 3 nodes", function*() {
 	    yield cleanDB()
 
 	  	 yield [
-          ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 10 }),
-	  	    ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 20 }),
-	  	    ProductPersistService.addClickProduct("userIdx", { price: 10.0, id: 30 }),
+          productPersistService.addClickProduct("userIdx", { price: 10.0, id: 10 }),
+	  	    productPersistService.addClickProduct("userIdx", { price: 10.0, id: 20 }),
+	  	    productPersistService.addClickProduct("userIdx", { price: 10.0, id: 30 }),
 
-          ProductPersistService.addClickProduct("userId1", { price: 10.0, id: 1 }),
-	  	    ProductPersistService.addClickProduct("userId1", { price: 10.0, id: 2 }),
-	  	    ProductPersistService.addClickProduct("userId1", { price: 10.0, id: 3 })
+          productPersistService.addClickProduct("userId1", { price: 10.0, id: 1 }),
+	  	    productPersistService.addClickProduct("userId1", { price: 10.0, id: 2 }),
+	  	    productPersistService.addClickProduct("userId1", { price: 10.0, id: 3 })
        ]
 	  })
 
     it("2 user nodes", function*() {
-      let resp = yield ProductPersistService.session.run(`
+      let resp = yield productPersistService.run(`
         MATCH (u:User)
         return u`
       )
@@ -42,12 +45,12 @@ describe("ProductPersistService", () => {
 	     yield cleanDB()
 
        yield [
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addClickProduct("userId3", { price: 10.0, id: 1 })
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addClickProduct("userId3", { price: 10.0, id: 1 })
        ]
 
-       products  = yield ProductPersistService.clickClickToo(1)
+       products  = yield productPersistService.clickClickToo(1)
     })
 
     it("who click product 1 click too product 3", () => {
@@ -63,16 +66,16 @@ describe("ProductPersistService", () => {
 	     yield cleanDB()
 
        yield [
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
-         ProductPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addClickProduct("userId3", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
+         productPersistService.addClickProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addClickProduct("userId3", { price: 10.0, id: 1 }),
 
-         ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 3 }),
-         ProductPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
-         ProductPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
+         productPersistService.addBuyProduct("userId2", { price: 10.0, id: 3 }),
+         productPersistService.addBuyProduct("userId2", { price: 10.0, id: 2 }),
+         productPersistService.addBuyProduct("userId3", { price: 10.0, id: 1 })
        ]
 
-       products  = yield ProductPersistService.whoClickInBuy(1)
+       products  = yield productPersistService.whoClickInBuy(1)
     })
 
     it("who click product 1 buy [3,2]", () => {

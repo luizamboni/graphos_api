@@ -6,26 +6,17 @@ const parseQs = require("../helpers/parse-qs")
 
 let co = require('co')
 let mongojs = require('mongojs')
-let JSONStream = require('JSONStream')
-let es = require('event-stream')
 
 let db = mongojs(process.env.AFP_MONGO_URL)
 let countClicks = 0
 let countImpressions = 0
 
-const extractClick = string => {
+const extractClick = doc => {
   try{
-    let json = string
-              .replace(/^[\[|\[]/,"")
-              .replace(/[\[|\[]$/,"")
-              .replace(/\n/,"")
-              .replace(/^,/,"")
-
-    let obj = JSON.parse(json)
 
     ProductPersistService
-    .addClickProduct(obj.CP_ID, 
-      parseQs({price: 100.0, id: obj.productInfo[0].pit })
+    .addClickProduct(doc.b2wUID, 
+      parseQs({price: 100.0, id: doc.productInfo[0].pit })
     )
     console.log(++countClicks)
   } catch (err){
@@ -33,18 +24,12 @@ const extractClick = string => {
   }
 }
 
-const extractImpressions = string => {
+const extractImpressions = doc => {
   try{
-    let json = string
-              .replace(/^[\[|\[]/,"")
-              .replace(/[\[|\[]$/,"")
-              .replace(/\n/,"")
-              .replace(/^,/,"")
 
-    let obj = JSON.parse(json)
-    for(let product of obj.productInfo){
+    for(let product of doc.productInfo){
       ProductPersistService
-      .addViewProduct(obj.CP_ID, 
+      .addViewProduct(doc.b2wUID, 
         parseQs({price: 100.0, id: product.pit })
       )
     }
@@ -63,19 +48,16 @@ const cleanDB = () => ProductPersistService.session
 co(function*(){
   yield cleanDB()
 
-  db.click.find({})
-  .pipe(JSONStream.stringify())
-  .pipe(es.mapSync((data) => {
-    extractClick(data)
-    return data
-  }))
+  let clickCursor = db.impression.find({b2wUID: { $ne: null }})
+  clickCursor.forEach( (err, doc) => {
+    extractClick(doc)
+  })
 
-  db.impression.find({})
-  .pipe(JSONStream.stringify())
-  .pipe(es.mapSync((data) => {
-    extractImpressions(data)
-    return data
-  }))
+
+  let impressionCursor = db.impression.find({b2wUID: { $ne: null }})
+  impressionCursor.forEach( (err, doc) => {
+    extractImpressions(doc)
+  })
 
 })
 
