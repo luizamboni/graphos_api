@@ -11,6 +11,9 @@ const log = (params) => logger ? logger(params) : null
 
 
 const Neo4jPersistenceService = {
+	cleanDB(){
+   	return Neo4jPersistenceService.run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
+	},
 
 	run(pattern, params){
     return session.run(pattern, params)

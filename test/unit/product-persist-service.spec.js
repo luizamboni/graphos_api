@@ -10,12 +10,10 @@ describe("ProductPersistService", () => {
 
 	let productPersistService = new ProductPersistService(Neo4jStrategy)
   
-  const cleanDB = () => productPersistService.run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
-
 	describe(".addclickProduct", () => {
 
 	  it("add 3 nodes", function*() {
-	    yield cleanDB()
+	    yield Neo4jStrategy.cleanDB()
 
 	  	 yield [
           productPersistService.addClickProduct("userIdx", { price: 10.0, id: 10 }),
@@ -29,10 +27,7 @@ describe("ProductPersistService", () => {
 	  })
 
     it("2 user nodes", function*() {
-      let resp = yield productPersistService.run(`
-        MATCH (u:User)
-        return u`
-      )
+      let resp = yield Neo4jStrategy.run(`MATCH (u:User) return u`)
       expect(resp.records).to.have.lengthOf(2)
     })
  })
@@ -42,7 +37,7 @@ describe("ProductPersistService", () => {
     let products
 
     before(function*(){
-	     yield cleanDB()
+	     yield Neo4jStrategy.cleanDB()
 
        yield [
          productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
@@ -63,7 +58,7 @@ describe("ProductPersistService", () => {
     let products
 
     before(function*(){
-	     yield cleanDB()
+	     yield Neo4jStrategy.cleanDB()
 
        yield [
          productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),

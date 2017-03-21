@@ -14,12 +14,11 @@ const app = require("../../app")
 
 
 describe("ROUTES", () => {
-  
+
   let productPersistService = new ProductPersistService(Neo4jStrategy)
-  const cleanDB = () => productPersistService.run(`MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r`)
 
 	beforeEach(function*(){
-    yield cleanDB()
+    yield Neo4jStrategy.cleanDB()
   })
 
 	describe("GET /action/view.png", () => {
@@ -59,7 +58,7 @@ describe("ROUTES", () => {
   describe("GET /recommend/who-view-view-too", () => {
     let res
     before(function*(){
-      yield cleanDB()
+      yield Neo4jStrategy.cleanDB()
 
       yield [
          productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
@@ -88,7 +87,7 @@ describe("ROUTES", () => {
 	describe("GET /recommend/who-view-buy", () => {
     let res
     before(function*(){
-      yield cleanDB()
+      yield Neo4jStrategy.cleanDB()
 
       yield [
          productPersistService.addClickProduct("userId2", { price: 10.0, id: 1 }),
@@ -109,6 +108,5 @@ describe("ROUTES", () => {
     it("respond product with id [3,2]", () =>{
       expect(_(res.body).pluck("id").sort()).to.be.eqls([2,3])
     })
-
   })
 })
