@@ -2,15 +2,10 @@
 
 const OrientDB = require('orientjs')
 const Promise = require("bluebird")
+const config = require("../../config/persistense")[ENV].orient
 
-const server = OrientDB({
-   host:       'localhost',
-   port:       2424,
-   username:   'root',
-   password:   'pwd',
-   useToken: true
-
-})
+const server = OrientDB(config)
+const logger = config.logger
 
 const db = server.use('recommend_test')
 const upperCamelCase = require('uppercamelcase');
@@ -28,7 +23,7 @@ const OrientDBPersistenceService = {
   },
 
   run(query, params){
-    console.log(query)
+    log(query)
     return db.query(query)
   },
 
