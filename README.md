@@ -68,7 +68,7 @@ create Vertice
 create Edge
 
 ```sql
-> CREATE EDGE FROM #10:3 TO #11:4
+> CREATE EDGE Buy FROM #10:3 TO #11:4
 ```
 
 update

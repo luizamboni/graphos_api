@@ -12,18 +12,24 @@ const server = OrientDB({
 
 })
 
-const db = server.use('products_test')
-
+const db = server.use('recommend_test')
+const upperCamelCase = require('uppercamelcase');
 const log = (params) => logger ? logger(params) : null
 
 
 const OrientDBPersistenceService = {
 
   cleanDB(){
-    return []
+    return Promise.all([
+      OrientDBPersistenceService.run("DELETE VERTEX Product"),
+      OrientDBPersistenceService.run("DELETE VERTEX User"),
+      OrientDBPersistenceService.run("DELETE EDGE E")
+    ])
   },
 
-  run(pattern, params){
+  run(query, params){
+    console.log(query)
+    return db.query(query)
   },
 
   getRelation(productId, relType, relType2){
@@ -31,26 +37,30 @@ const OrientDBPersistenceService = {
   },
 
   buildUserNode(userId, productData, relType) {
+    let { id } = productData
+    let updateUser = `UPDATE User SET user_id="${userId}" UPSERT WHERE user_id="${userId}"`
+    let updateProd = `UPDATE Product SET id=${id} UPSERT WHERE id=${id}`
+    let selectUser = `SELECT FROM User WHERE user_id="${userId}" LIMIT 1`
+    let selectProd = `SELECT FROM Product WHERE id=${id} LIMIT 1`
+
     return Promise.all([
-      db.class.get('User'),
-      db.class.get('Product'),
-      db.class.get(relType)
+      OrientDBPersistenceService.run(updateUser),
+      OrientDBPersistenceService.run(updateProd),
     ])
-    .spread(( User, Product ,RelType ) => {
+    .then(() => {
       return Promise.all([
-        User.create({ user_id: userId }),
-        Product.create(productData),
-        RelType
+        OrientDBPersistenceService.run(selectUser),
+        OrientDBPersistenceService.run(selectProd)
       ])
     })
-    .spread((user, product,RelType) => {
-      console.log( user['@rid'], product["@rid"].toString())
-      return RelType.create({
-        out: user['@rid'],
-        in: product['@rid']
-      })
+    .spread((users, products) => {
+      let [ from, to ] = [users[0]['@rid'], products[0]['@rid']]
+      let klassName = upperCamelCase(relType)
+      let createEdge = `CREATE EDGE ${klassName} FROM ${from} TO ${to}`
+
+      return OrientDBPersistenceService.run(createEdge)
     })
-  }
+  } 
 
 }
 
