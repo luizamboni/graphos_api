@@ -22,6 +22,7 @@ module.exports = {
       pass:  "test"
     },
     orient: {
+     // logger: console.log,
      host:     "localhost",
      port:     2424,
      username: "root",

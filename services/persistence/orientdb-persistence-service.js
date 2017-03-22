@@ -5,6 +5,7 @@ const Promise = require("bluebird")
 const config = require("../../config/persistense")[ENV].orient
 
 const server = OrientDB(config)
+debugger
 const logger = config.logger
 
 const db = server.use('recommend_test')
@@ -28,7 +29,26 @@ const OrientDBPersistenceService = {
   },
 
   getRelation(productId, relType, relType2){
+    /* 
+      who buy product with id 1
+      only cid
+      SELECT in( 'Buy' ) FROM Product WHERE id = 1
+      expand attributes
+      SELECT EXPAND( in( 'Buy' ) ) FROM Product WHERE id = 1
+    
+      get vertex Buy out User
+      SELECT outE('Buy') FROM User 
 
+    */
+    relType = upperCamelCase(relType)
+    relType2 = upperCamelCase((relType2) ? relType2 : relType)
+    let q = `SELECT FROM 
+               (SELECT EXPAND(out('${relType2}')) 
+               FROM 
+               (SELECT EXPAND(in('${relType}')) 
+               FROM Product WHERE id = ${productId})) 
+               WHERE id != ${productId}`
+    return OrientDBPersistenceService.run(q)
   },
 
   buildUserNode(userId, productData, relType) {

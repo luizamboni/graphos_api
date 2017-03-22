@@ -1,6 +1,6 @@
 "use strong"
 
-const request = require("../setup")
+require("../setup")
 
 // modules
 const supertest = require("supertest")
