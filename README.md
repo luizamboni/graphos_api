@@ -43,4 +43,42 @@ and add this user for development purpouse
 
 4) create Vertices classes User and Product
 
-5) create Edges classes click, buy and view
+```sql
+> CREATE Class User extends V;
+> CREATE Class Product extends V;
+```
+
+5) create Edges classes Click, Buy and View
+
+```sql
+> CREATE Class Click extends E;
+> CREATE Class Buy extends E;
+> CREATE Class View extends E;
+
+```
+
+6) Examples
+
+create Vertice
+
+```sql
+> INSERT INTO User SET name = "test";
+```
+
+create Edge
+
+```sql
+> CREATE EDGE FROM #10:3 TO #11:4
+```
+
+update
+
+```sql
+> UPDATE User SET name = "test" WHERE user_id = 1;
+```
+
+update with upsert
+
+```sql
+> UPDATE User SET user_id = 1 UPSERT WHERE user_id = 1;
+```
