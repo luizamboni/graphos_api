@@ -4,11 +4,11 @@ const OrientDB = require('orientjs')
 const Promise = require("bluebird")
 const config = require("../../config/persistense")[ENV].orient
 
-const server = OrientDB(config)
-debugger
+const server = OrientDB(config.server)
+
 const logger = config.logger
 
-const db = server.use('recommend_test')
+const db = server.use(config.database.name)
 const upperCamelCase = require('uppercamelcase');
 const log = (params) => logger ? logger(params) : null
 

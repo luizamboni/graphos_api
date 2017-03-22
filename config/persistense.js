@@ -8,11 +8,16 @@ module.exports = {
       pass:  "test"
     },
     orient: {
-     host:     "localhost",
-     port:     2424,
-     username: "root",
-     password: "pwd",
-     useToken: true
+      database: {
+        name: "recommend_development"
+      },
+      server: {
+        host:     "localhost",
+        port:     2424,
+        username: "root",
+        password: "pwd",
+        useToken: true
+      }
     }
   }, 
   test: {
@@ -22,12 +27,17 @@ module.exports = {
       pass:  "test"
     },
     orient: {
-     // logger: console.log,
-     host:     "localhost",
-     port:     2424,
-     username: "root",
-     password: "pwd",
-     useToken: true
+     logger: console.log,
+     database: {
+       name: "recommend_test"
+     },
+     server: {
+       host:     "localhost",
+       port:     2424,
+       username: "root",
+       password: "pwd",
+       useToken: true
+     }
     }
   },
   production: {
