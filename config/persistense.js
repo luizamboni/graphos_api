@@ -27,7 +27,7 @@ module.exports = {
       pass:  "test"
     },
     orient: {
-     logger: console.log,
+     // logger: console.log,
      database: {
        name: "recommend_test"
      },
