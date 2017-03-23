@@ -23,23 +23,24 @@ const OrientDBPersistenceService = {
     ])
   },
 
-  run(query, params){
+  run(query, params={}){
     log(query)
-    return db.query(query)
+    return db.query(query,params)
   },
 
-  getRelation(productId, relType, relType2){
-    /* 
-      who buy product with id 1
-      only cid
-      SELECT in( 'Buy' ) FROM Product WHERE id = 1
-      expand attributes
-      SELECT EXPAND( in( 'Buy' ) ) FROM Product WHERE id = 1
-    
-      get vertex Buy out User
-      SELECT outE('Buy') FROM User 
 
-    */
+  /* 
+    who buy product with id 1
+    only cid
+    SELECT in( 'Buy' ) FROM Product WHERE id = 1
+    expand attributes
+    SELECT EXPAND( in( 'Buy' ) ) FROM Product WHERE id = 1
+  
+    get vertex Buy out User
+    SELECT outE('Buy') FROM User 
+  */
+  getRelation(productId, relType, relType2){
+
     relType = upperCamelCase(relType)
     relType2 = upperCamelCase((relType2) ? relType2 : relType)
     let q = `SELECT FROM 
@@ -52,31 +53,26 @@ const OrientDBPersistenceService = {
   },
 
   buildUserNode(userId, productData, relType) {
+
+
     let { id } = productData
-    let updateUser = `UPDATE User SET user_id="${userId}" UPSERT WHERE user_id="${userId}"`
-    let updateProd = `UPDATE Product SET id=${id} UPSERT WHERE id=${id}`
-    let selectUser = `SELECT FROM User WHERE user_id="${userId}" LIMIT 1`
-    let selectProd = `SELECT FROM Product WHERE id=${id} LIMIT 1`
+    let klassName = upperCamelCase(relType)
 
-    return Promise.all([
-      OrientDBPersistenceService.run(updateUser),
-      OrientDBPersistenceService.run(updateProd),
-    ])
-    .then(() => {
-      return Promise.all([
-        OrientDBPersistenceService.run(selectUser),
-        OrientDBPersistenceService.run(selectProd)
-      ])
+    let b1 = "begin\n"
+    b1 +=  `UPDATE User SET user_id="${userId}" UPSERT WHERE user_id="${userId}"\n`
+    b1 +=  `UPDATE Product SET id=${id} UPSERT WHERE id=${id}\n`
+    b1 +=  `commit retry 1\n`
+
+    return OrientDBPersistenceService.run(b1, {class: 's'}).then(() => {
+      let q = `CREATE EDGE ${klassName} 
+              FROM (SELECT FROM User WHERE user_id="${userId}") 
+              TO (SELECT FROM Product WHERE id=${id})`
+
+      return OrientDBPersistenceService.run(q)
     })
-    .spread((users, products) => {
-      let [ from, to ] = [users[0]['@rid'], products[0]['@rid']]
-      let klassName = upperCamelCase(relType)
-      let createEdge = `CREATE EDGE ${klassName} FROM ${from} TO ${to}`
+   
 
-      return OrientDBPersistenceService.run(createEdge)
-    })
-  } 
-
+  }
 }
 
 module.exports = OrientDBPersistenceService

@@ -6,7 +6,7 @@ this project is a study from avaible graph persistenses to build a recomendation
 
 # Coreved
  - Neo4j 
- - OrientDB (to implement)
+ - OrientDB
  - Titan (to implement)
 
 # Neo4j
@@ -81,4 +81,26 @@ update with upsert
 
 ```sql
 > UPDATE User SET user_id = 1 UPSERT WHERE user_id = 1;
+```
+
+# TitanDB
+
+download 
+
+```shell
+$ wget http://s3.thinkaurelius.com/downloads/titan/titan-1.0.0-hadoop1.zip
+```
+
+install
+
+```shell
+$ cd /titan-1.0.0-hadoop1/bin
+$ ./titan.sh start
+```
+
+
+run gremlin to trest
+
+```shell
+$ ./gremlin.sh start
 ```

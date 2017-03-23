@@ -14,7 +14,7 @@ describe("ProductPersistService", () => {
     
     describe(".addclickProduct", () => {
 
-      it("add 3 nodes", function*() {
+      before(function*() {
         yield orientStrategy.cleanDB()
 
         yield [
@@ -26,6 +26,7 @@ describe("ProductPersistService", () => {
           productPersistService.addClickProduct("userId1", { price: 10.0, id: 2 }),
           productPersistService.addClickProduct("userId1", { price: 10.0, id: 3 })
         ]
+        
       })
 
       it("2 user nodes", function*() {
