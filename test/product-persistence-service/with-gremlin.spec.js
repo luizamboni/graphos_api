@@ -1,6 +1,7 @@
 "use strong"
 
 require("../setup")
+const sleep = require('sleep')
 
 const ProductPersistService = require("../../services/product-persist-service")
 const titanStrategy = require("../../services/persistence/titandb-persistence-service")
@@ -15,7 +16,7 @@ describe("ProductPersistService", () => {
     describe(".addclickProduct", () => {
 
       before(function*() {
-        // yield titanStrategy.cleanDB()
+        yield titanStrategy.cleanDB()
 
         yield [
           productPersistService.addClickProduct("userIdx", { price: 10.0, id: 10 }),
@@ -26,11 +27,14 @@ describe("ProductPersistService", () => {
           productPersistService.addClickProduct("userId1", { price: 10.0, id: 2 }),
           productPersistService.addClickProduct("userId1", { price: 10.0, id: 3 })
         ]
+
       })
 
       it.only("2 user nodes", function*() {
-        let resp = yield titanStrategy.run(`MATCH (u:User) return u`)
-        expect(resp.records).to.have.lengthOf(2)
+
+        let nodes = yield titanStrategy.run(`g.V().hasLabel("user").valueMap()`)
+        debugger
+        expect(nodes).to.have.lengthOf(2)
       })
    })
 

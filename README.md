@@ -98,9 +98,23 @@ $ cd /titan-1.0.0-hadoop1/bin
 $ ./titan.sh start
 ```
 
+up cassandra
 
-run gremlin to trest
+```shell
+$ ./bin/cassandra
+```
+
+up elasticsearch
+
+```shell
+$ ./bin/elasticsearch
+```
+
+
+run gremlin
 
 ```shell
 $ ./gremlin.sh start
+$ graph = TitanFactory.open('conf/titan-cassandra-es.properties')
+
 ```

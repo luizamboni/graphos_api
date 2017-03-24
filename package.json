@@ -15,6 +15,7 @@
     "cors": "^2.8.1",
     "express": "^4.15.2",
     "gremlin": "^2.3.2",
+    "grex": "^0.8.0",
     "mongojs": "^2.4.0",
     "neo4j-driver": "^1.1.1",
     "orientjs": "^2.2.4",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha-co": "^1.17.2",
+    "sleep": "^5.1.0",
     "supertest": "^3.0.0"
   }
 }

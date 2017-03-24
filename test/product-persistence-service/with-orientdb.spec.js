@@ -26,11 +26,10 @@ describe("ProductPersistService", () => {
           productPersistService.addClickProduct("userId1", { price: 10.0, id: 2 }),
           productPersistService.addClickProduct("userId1", { price: 10.0, id: 3 })
         ]
-        
       })
 
       it("2 user nodes", function*() {
-        let users = yield orientStrategy.run("SELECT FROM User")
+        let users = yield orientStrategy.run(`graph.V().hasLabel("user").valueMap()`)
         expect(users).to.have.lengthOf(2)
       })
     })
