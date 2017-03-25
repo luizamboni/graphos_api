@@ -3,12 +3,12 @@
 class ProductPersistService {
 
 
-	constructor(adapterService) {
-		this.adapterService = adapterService
-	}
+  constructor(adapterService) {
+    this.adapterService = adapterService
+  }
 
-	run(pattern, params){
-		return this.adapterService.run(pattern, params)
+  run(pattern, params){
+    return this.adapterService.run(pattern, params)
   }
 
   clickClickToo(productId){
@@ -20,15 +20,15 @@ class ProductPersistService {
   }
 
   addViewProduct(userId, productData) {
-  	return this.adapterService.buildUserNode(userId, productData, "view")
+    return this.adapterService.buildUserNode(userId, productData, "view")
   }
 
   addBuyProduct(userId, productData) {
-  	return this.adapterService.buildUserNode(userId, productData, "buy")
+    return this.adapterService.buildUserNode(userId, productData, "buy")
   }
 
   addClickProduct(userId, productData) {
-  	return this.adapterService.buildUserNode(userId, productData, "click")
+    return this.adapterService.buildUserNode(userId, productData, "click")
   }
 }
 

@@ -8,22 +8,16 @@ const gremlin = makeTemplateTag(client)
 
 // const log = (params) => logger ? logger(params) : null
 
-
+const wait = 0.2
 const log = (params) => console.log(params)
-
-// client.execute('tx=graph.newTransaction();tx.addVertex(T.label,"product","id",991);tx.commit()', {}, (err, results) =>{
-//   if (err) {
-//     return console.error(err)
-//   }
-//   console.log(results)
-// })
-
-// client.execute('g.V().has("id")', {}, (err, results) => { console.log(err); console.log(results) }) 
 
 const TitanPersistenceService = {
 
   cleanDB(){
-    return TitanPersistenceService.run("g.V().drop(); g.E().drop()")
+    let rmAll = `graph.traversal().V().drop().iterate(); 
+                 graph.traversal().E().drop(); 
+                 graph.tx().commit()`
+    return TitanPersistenceService.run(rmAll)
   },
 
   run(query, params={}){
@@ -37,26 +31,24 @@ const TitanPersistenceService = {
   },
 
   getRelation(productId, relType, relType2){
-
+    relType2 = (relType2) ? relType2 : relType
+    let q = `q = g.V().as('h').has('id',${productId}).in('${relType}').out('${relType2}').where(neq('h')).valueMap()`
+    return TitanPersistenceService.run(q)
   },
 
   buildUserNode(userId, productData, relType) {
 
-    let createVertices = `u0 = g.V().has('user_id', '${userId}');
-                 u1 = (u0.hasNext()) ? u0.next() : graph.addVertex(label, 'user', 'user_id', '${userId}');
-                 p0 = g.V().has('id', '${productData.id}');
-                 p1 = (p0.hasNext()) ? p0.next() : graph.addVertex(label, 'product', 'id', '${productData.id}');`
-    // createVertices += `u1.addEdge('${relType}', p1); graph.tx().commit()`
+    let { id } = productData
+    let createVertices = `
+                 g = graph.traversal();
+                 u0 = g.V().has('user_id','${userId}');
+                 u1 = (u0.hasNext()) ? u0.next() : graph.addVertex(T.label, 'user', 'user_id' , '${userId}');
+                 p0 = g.V().has('id', ${id});
+                 p1 = (p0.hasNext()) ? p0.next() : graph.addVertex(T.label, 'product', 'id' , ${id});
+                 u1.addEdge('${relType}', p1);
+                 `
 
-    return Promise.all(
-      TitanPersistenceService.run(createVertices)
-    ).then(() => {
-      // return 
-      let ins = `u = g.V().has('user_id', '${userId}').next();
-                 p = g.V().has('id', '${productData.id}').next()
-                 u.addEdge('${relType}', p);`
-      return TitanPersistenceService.run(ins)
-    })
+    return TitanPersistenceService.run(createVertices)
   }
 }
 
