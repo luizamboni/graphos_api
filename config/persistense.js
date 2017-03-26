@@ -2,6 +2,10 @@
 
 module.exports = {
   development: {
+    gremlin: {
+      host: "localhost",
+      port: 8182
+    },
     neo4j: {
       url: "bolt://localhost:7687", 
       user: "neo4j",
@@ -21,6 +25,11 @@ module.exports = {
     }
   }, 
   test: {
+    gremlin: {
+      // logger: console.log, 
+      host: "localhost",
+      port: 8182
+    },    
     neo4j: {
       url: "bolt://localhost:7687", 
       user: "neo4j",

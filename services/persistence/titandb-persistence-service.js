@@ -3,16 +3,16 @@ const Promise = require("bluebird")
 
 const { createClient , makeTemplateTag } = require('gremlin')
 
-const client = createClient()
+const { port , host, logger} = require("../../config/persistense")[ENV].gremlin
+
+
+const client = createClient(port, host, { session: true })
 const gremlin = makeTemplateTag(client)
 
-// const log = (params) => logger ? logger(params) : null
-
-const wait = 0.2
-const log = (params) => console.log(params)
+const log = (params) => logger ? logger(params) : null
 
 const TitanPersistenceService = {
-
+ 
   cleanDB(){
     let rmAll = `graph.traversal().V().drop().iterate(); 
                  graph.traversal().E().drop(); 
