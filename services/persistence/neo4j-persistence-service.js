@@ -23,9 +23,9 @@ const Neo4jPersistenceService = {
     relType2 = (relType2) ? relType2 : relType
 
     let pattern = `MATCH ()-[:${relType}]->(p:Product {id: { productId }})<-[:${relType}]-(users) 
-                    MATCH (users)-[:${relType2}]->(products) 
-                    WHERE NOT products.id = {productId}
-                    RETURN products`
+      MATCH (users)-[:${relType2}]->(products) 
+      WHERE NOT products.id = {productId}
+      RETURN products`
     let params = { productId } 
     log(pattern, params )
     return Neo4jPersistenceService.run(pattern, params)

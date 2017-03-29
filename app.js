@@ -2,7 +2,7 @@
 
 let app = require("express")()
 
-global.ENV = process.env.NODE_ENV || ENV || "development"
+global.ENV = process.env.NODE_ENV || "development"
 
 /* helpers */
 let parseQs = require("./helpers/parse-qs")
