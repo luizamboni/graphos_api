@@ -70,8 +70,6 @@ const OrientDBPersistenceService = {
 
       return OrientDBPersistenceService.run(q)
     })
-   
-
   }
 }
 

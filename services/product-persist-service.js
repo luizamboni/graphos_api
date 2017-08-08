@@ -1,8 +1,7 @@
 "use strong"
 
 class ProductPersistService {
-
-
+  
   constructor(adapterService) {
     this.adapterService = adapterService
   }
